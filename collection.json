@@ -7,15 +7,80 @@
 	"item": [
 		{
 			"name": "LIST USERS",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "84ce7e8c-ff79-4472-b175-63457160a819",
+						"exec": [
+							"pm.test(\"Validate Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate Correct Number of Users per page is displayed\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.length).to.eql(jsonData.per_page);",
+							"});",
+							"",
+							"",
+							"// Schema for the users displayed",
+							"const userSchema = {",
+							"  \"required\": [\"id\", \"email\", \"first_name\", \"last_name\", \"avatar\" ],",
+							"  \"properties\": {",
+							"    ",
+							"    \"id\": {",
+							"      \"type\": \"integer\",",
+							"      \"minimum\": 1,",
+							"      \"maximum\": 1000",
+							"    },",
+							"    \"email\": {",
+							"      \"type\": \"string\",",
+							"      \"minLength\": 1,",
+							"      \"maxLength\": 250",
+							"    },",
+							"    \"first_name\": {",
+							"      \"type\": \"string\",",
+							"      \"minLength\": 1,",
+							"      \"maxLength\": 250",
+							"    },",
+							"    \"last_name\": {",
+							"      \"type\": \"string\",",
+							"      \"minLength\": 1,",
+							"      \"maxLength\": 250",
+							"    },",
+							"    \"avatar\": {",
+							"      \"type\": \"string\",",
+							"      \"minLength\": 1,",
+							"      \"maxLength\": 250",
+							"    }",
+							"",
+							"",
+							"  }",
+							"};",
+							"",
+							"// Test whether the response matches the schema",
+							"pm.test('Verify Schema for Users displayed is valid', function() {",
+							"    var user = JSON.parse(responseBody);",
+							"    pm.expect(tv4.validate(user.data[0], userSchema)).to.be.true;",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://reqres.in/api/users?page=2",
-					"protocol": "https",
+					"raw": "{{baseUrl}}/api/users?page=2",
 					"host": [
-						"reqres",
-						"in"
+						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
@@ -43,11 +108,10 @@
 							"    pm.response.to.have.status(404);",
 							"});",
 							"",
-							"",
 							"pm.test(\"Validate Response Body is empty\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData).to.eql({});",
-							"});"
+							"     pm.expect(jsonData).to.be.empty;",
+							"    });"
 						],
 						"type": "text/javascript"
 					}
@@ -57,11 +121,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://reqres.in/api/users/:userID",
-					"protocol": "https",
+					"raw": "{{baseUrl}}/api/users/:userID",
 					"host": [
-						"reqres",
-						"in"
+						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
@@ -110,14 +172,14 @@
 					"script": {
 						"id": "1c81db4d-a119-40f8-9567-77a48cab2d38",
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
+							"pm.test(\"Validate Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
 							"customername = pm.environment.get(\"customer\"); ",
 							"",
 							"",
-							"pm.test(\"Your test name\", function () {",
+							"pm.test(\"Validate Customer Name is updated accurately\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.name).to.eql(customername);",
 							"    pm.expect(jsonData.job).to.eql(\"zion resident\");",
@@ -147,11 +209,9 @@
 					}
 				},
 				"url": {
-					"raw": "https://reqres.in/api/users/2",
-					"protocol": "https",
+					"raw": "{{baseUrl}}/api/users/2",
 					"host": [
-						"reqres",
-						"in"
+						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
@@ -170,11 +230,11 @@
 					"script": {
 						"id": "d195e638-3c42-452c-9019-b1aca2ecbdbb",
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
+							"pm.test(\"Validate Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
-							"pm.test(\"Body matches string\", function () {",
+							"pm.test(\"Validate token is generated\", function () {",
 							"    pm.expect(pm.response.text()).to.include(\"token\");",
 							"});"
 						],
@@ -202,11 +262,9 @@
 					}
 				},
 				"url": {
-					"raw": "https://reqres.in/api/login",
-					"protocol": "https",
+					"raw": "{{baseUrl}}/api/login",
 					"host": [
-						"reqres",
-						"in"
+						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
@@ -215,6 +273,36 @@
 				}
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "21571a12-a13b-470d-be7c-1974fd4ac073",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "27cfb57c-310a-4d6d-afa3-315a0a368385",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "487a8604-a626-4c51-bea5-749abafa3d79",
+			"key": "baseUrl",
+			"value": "https://reqres.in",
+			"type": "string"
 		}
 	],
 	"protocolProfileBehavior": {}
